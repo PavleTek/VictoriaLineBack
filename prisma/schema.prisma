@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String?   @unique
+  password     String
+  name         String?
+  lastName     String?
+  rut          String?   @unique @db.VarChar(9)
+  email        String   @unique
+  organization String?
+  role         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  orders       Order[]
+  createdOrders Order[] @relation("OrderCreatedBy")
+  updatedOrders Order[] @relation("OrderUpdatedBy")
+  createdCompanies ChileanCompany[] @relation("CompanyCreatedBy")
+  updatedCompanies ChileanCompany[] @relation("CompanyUpdatedBy")
+}
+
+model Order {
+  id              Int      @id @default(autoincrement())
+  user            User     @relation(fields: [userId], references: [id])
+  userId          Int
+  description     String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Audit fields
+  createdByUser   User     @relation("OrderCreatedBy", fields: [createdByUserId], references: [id])
+  createdByUserId Int
+  updatedByUser   User     @relation("OrderUpdatedBy", fields: [updatedByUserId], references: [id])
+  updatedByUserId Int
+}
+
+model ChileanCompany {
+  id                      Int      @id @default(autoincrement())
+  name                    String
+  rut                     String   @unique @db.VarChar(9)
+  iataCode                String?
+  siiResolutionNumber     Int?
+  siiResolutionDate       DateTime?
+  electronicInvoiceEnabled Boolean  @default(false)
+  socialReason            String?
+  address                 String?
+  field                   String?
+  email                   String?
+  phoneNumber             String?
+  
+  // Representative information
+  representativeFullName  String?
+  representativeRut       String?   @db.VarChar(9)
+  bookRut                 String?   @db.VarChar(9)
+  checkPP                 String?
+  accountantFullName      String?
+  accountantRut           String?   @db.VarChar(9)
+  
+  // Currency information
+  firstCurrency           String?
+  secondCurrency          String?
+  thirdCurrency           String?
+  secondCurrencyConversion String?
+  thirdCurrencyConversion String?
+  firstCurrencyMask       String?
+  secondCurrencyMask      String?
+  thirdCurrencyMask       String?
+  
+  // Tax information
+  vat                     Decimal?  @db.Decimal(10, 2)
+  retentions              Decimal?  @db.Decimal(10, 2)
+  iva                     Decimal?  @db.Decimal(10, 2)
+  
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  
+  // Audit fields
+  createdByUser           User     @relation("CompanyCreatedBy", fields: [createdByUserId], references: [id])
+  createdByUserId         Int
+  updatedByUser           User     @relation("CompanyUpdatedBy", fields: [updatedByUserId], references: [id])
+  updatedByUserId         Int
+} 

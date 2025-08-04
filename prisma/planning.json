@@ -1,0 +1,115 @@
+{
+  "ChileanCompany": {
+    "name": "ChileanCompany",
+    "fields": {
+      "id": "id",
+      "name": "string",
+      "rut": "string",
+      "CodeIATA": "string",
+      "SiiResNumber": "number",
+      "SiiResDate": "date",
+      "InvoiceEnabledSii": "boolean",
+      "SocialReason": "string",
+      "email": "string",
+      "phoneNumber": "number",
+
+      "representativeName": "string",
+      "representativeRut": "string",
+      "bookSendingRut": "string",
+      "ChecksPP": "string",
+      "Accountantname": "string",
+      "AccountantRut": "string",
+
+      "firstCurrency": "string",
+      "firstMask": "string",
+      "firstConversion": "string",
+      "secondCurrency": "string",
+      "secondConversion": "string",
+      "secondMask": "string",
+      "thirdCurrencyd": "string",
+      "thirdConversion": "string",
+      "thirdMask": "string",
+      "vat": "number",
+      "retention": "number"
+    }
+  },
+  "User": {
+    "name": "User",
+    "fields": {
+      "name": "string",
+      "rut": "string",
+      "address": "string",
+      "email": "string",
+      "password": "string"
+    }
+  },
+  "MasterBL": {
+    "name": "MasterBL",
+    "fields": {
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "field": "type",
+      "lastField": "type"
+    }
+  },
+  "HouseBL": {
+    "name": "TemplateName",
+    "fields": {
+      "field": "type",
+      "lastField": "type"
+    }
+  },
+  "ArrivingNotice": {
+    "name": "ArrivingNotice",
+    "fields": {
+      "field": "type",
+      "lastField": "type"
+    }
+  },
+  "BookingConfirmation": {
+    "name": "BookingConfirmation",
+    "fields": {
+      "field": "type",
+      "lastField": "type"
+    }
+  },
+  "Order": {
+    "name": "Order",
+    "fields": {
+      "name": "string",
+      "rut": "string",
+      "address": "string",
+      "phone": "string",
+      "email": "string"
+    }
+  },
+  "Template": {
+    "name": "TemplateName",
+    "fields": {
+      "field": "type",
+      "lastField": "type"
+    }
+  },
+  "Operation": {
+    "name": "Operation",
+    "fields": {
+      "name": "string",
+      "rut": "string",
+      "address": "string",
+      "phone": "string",
+      "email": "string"
+    }
+  }
+}
