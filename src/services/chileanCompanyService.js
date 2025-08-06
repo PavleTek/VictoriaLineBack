@@ -1,27 +1,25 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require("../../prisma/prisma");
 
 // Get all Chilean companies
 async function getAllChileanCompanies() {
   return prisma.chileanCompany.findMany({
     orderBy: {
-      name: 'asc'
-    }
+      name: "asc",
+    },
   });
 }
 
 // Get a single Chilean company by ID
 async function getChileanCompanyById(id) {
   return prisma.chileanCompany.findUnique({
-    where: { id: parseInt(id) }
+    where: { id: parseInt(id) },
   });
 }
 
 // Get a Chilean company by RUT
 async function getChileanCompanyByRut(rut) {
   return prisma.chileanCompany.findUnique({
-    where: { rut }
+    where: { rut },
   });
 }
 
@@ -32,15 +30,19 @@ async function createChileanCompany(companyData) {
       name: companyData.name,
       rut: companyData.rut,
       iataCode: companyData.iataCode,
-      siiResolutionNumber: companyData.siiResolutionNumber ? parseInt(companyData.siiResolutionNumber) : null,
-      siiResolutionDate: companyData.siiResolutionDate ? new Date(companyData.siiResolutionDate) : null,
+      siiResolutionNumber: companyData.siiResolutionNumber
+        ? parseInt(companyData.siiResolutionNumber)
+        : null,
+      siiResolutionDate: companyData.siiResolutionDate
+        ? new Date(companyData.siiResolutionDate)
+        : null,
       electronicInvoiceEnabled: companyData.electronicInvoiceEnabled || false,
       socialReason: companyData.socialReason,
       address: companyData.address,
       field: companyData.field,
       email: companyData.email,
-      phoneNumber: companyData.phoneNumber
-    }
+      phoneNumber: companyData.phoneNumber,
+    },
   });
 }
 
@@ -52,22 +54,26 @@ async function updateChileanCompany(id, companyData) {
       name: companyData.name,
       rut: companyData.rut,
       iataCode: companyData.iataCode,
-      siiResolutionNumber: companyData.siiResolutionNumber ? parseInt(companyData.siiResolutionNumber) : null,
-      siiResolutionDate: companyData.siiResolutionDate ? new Date(companyData.siiResolutionDate) : null,
+      siiResolutionNumber: companyData.siiResolutionNumber
+        ? parseInt(companyData.siiResolutionNumber)
+        : null,
+      siiResolutionDate: companyData.siiResolutionDate
+        ? new Date(companyData.siiResolutionDate)
+        : null,
       electronicInvoiceEnabled: companyData.electronicInvoiceEnabled,
       socialReason: companyData.socialReason,
       address: companyData.address,
       field: companyData.field,
       email: companyData.email,
-      phoneNumber: companyData.phoneNumber
-    }
+      phoneNumber: companyData.phoneNumber,
+    },
   });
 }
 
 // Delete a Chilean company
 async function deleteChileanCompany(id) {
   return prisma.chileanCompany.delete({
-    where: { id: parseInt(id) }
+    where: { id: parseInt(id) },
   });
 }
 
@@ -79,19 +85,19 @@ async function searchChileanCompanies(searchTerm) {
         {
           name: {
             contains: searchTerm,
-            mode: 'insensitive'
-          }
+            mode: "insensitive",
+          },
         },
         {
           rut: {
-            contains: searchTerm
-          }
-        }
-      ]
+            contains: searchTerm,
+          },
+        },
+      ],
     },
     orderBy: {
-      name: 'asc'
-    }
+      name: "asc",
+    },
   });
 }
 
@@ -102,5 +108,5 @@ module.exports = {
   createChileanCompany,
   updateChileanCompany,
   deleteChileanCompany,
-  searchChileanCompanies
-}; 
+  searchChileanCompanies,
+};

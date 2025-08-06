@@ -1,91 +1,264 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           Int      @id @default(autoincrement())
-  username     String?   @unique
-  password     String
-  name         String?
-  lastName     String?
-  rut          String?   @unique @db.VarChar(9)
-  email        String   @unique
-  organization String?
-  role         String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
-  // Relations
-  orders       Order[]
-  createdOrders Order[] @relation("OrderCreatedBy")
-  updatedOrders Order[] @relation("OrderUpdatedBy")
-  createdCompanies ChileanCompany[] @relation("CompanyCreatedBy")
-  updatedCompanies ChileanCompany[] @relation("CompanyUpdatedBy")
-}
-
-model Order {
-  id              Int      @id @default(autoincrement())
-  user            User     @relation(fields: [userId], references: [id])
-  userId          Int
-  description     String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  // Audit fields
-  createdByUser   User     @relation("OrderCreatedBy", fields: [createdByUserId], references: [id])
-  createdByUserId Int
-  updatedByUser   User     @relation("OrderUpdatedBy", fields: [updatedByUserId], references: [id])
-  updatedByUserId Int
-}
-
+// Main Models
 model ChileanCompany {
   id                      Int      @id @default(autoincrement())
   name                    String
-  rut                     String   @unique @db.VarChar(9)
-  iataCode                String?
-  siiResolutionNumber     Int?
-  siiResolutionDate       DateTime?
-  electronicInvoiceEnabled Boolean  @default(false)
-  socialReason            String?
-  address                 String?
-  field                   String?
+  rut                     String   @unique @db.VarChar(12)
+  CodeIATA                String?
+  SiiResNumber            Int?
+  SiiResDate              DateTime?
+  InvoiceEnabledSii       Boolean  @default(false)
+  SocialReason            String?
   email                   String?
   phoneNumber             String?
   
   // Representative information
-  representativeFullName  String?
-  representativeRut       String?   @db.VarChar(9)
-  bookRut                 String?   @db.VarChar(9)
-  checkPP                 String?
-  accountantFullName      String?
-  accountantRut           String?   @db.VarChar(9)
+  representativeName      String?
+  representativeRut       String?   @db.VarChar(12)
+  bookSendingRut          String?   @db.VarChar(12)
+  ChecksPP                String?
+  Accountantname          String?
+  AccountantRut           String?   @db.VarChar(12)
   
   // Currency information
   firstCurrency           String?
+  firstMask               String?
+  firstConversion         String?
   secondCurrency          String?
-  thirdCurrency           String?
-  secondCurrencyConversion String?
-  thirdCurrencyConversion String?
-  firstCurrencyMask       String?
-  secondCurrencyMask      String?
-  thirdCurrencyMask       String?
+  secondConversion        String?
+  secondMask              String?
+  thirdCurrencyd          String?
+  thirdConversion         String?
+  thirdMask               String?
   
   // Tax information
   vat                     Decimal?  @db.Decimal(10, 2)
-  retentions              Decimal?  @db.Decimal(10, 2)
-  iva                     Decimal?  @db.Decimal(10, 2)
+  retention               Decimal?  @db.Decimal(10, 2)
   
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
   
-  // Audit fields
-  createdByUser           User     @relation("CompanyCreatedBy", fields: [createdByUserId], references: [id])
-  createdByUserId         Int
-  updatedByUser           User     @relation("CompanyUpdatedBy", fields: [updatedByUserId], references: [id])
-  updatedByUserId         Int
+  // Relations
+  seaQuotes               SeaQuote[]
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  username     String   @unique
+  email        String   @unique
+  rut          String   @unique @db.VarChar(12)
+  address      String
+  password     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  roles        UserRole[]
+  seaQuotes    SeaQuote[]
+}
+
+model Role {
+  id      Int    @id @default(autoincrement())
+  name    String @unique
+  
+  // Relations
+  users   UserRole[]
+}
+
+model UserRole {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  roleId Int
+  
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, roleId])
+}
+
+// Cargo and Container Models
+model CargoType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+model CargoCondition {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+model ContainerType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  
+  // Relations
+  cargoData CargoData[]
+}
+
+model CargoData {
+  id                Int    @id @default(autoincrement())
+  containerNumber   String?
+  containerTypeId   Int?
+  sealNumber        String?
+  packagesQuantity  Int
+  weightKg          Decimal @db.Decimal(10, 2)
+  
+  // Relations
+  containerType     ContainerType? @relation(fields: [containerTypeId], references: [id])
+  seaQuotes         SeaQuote[]
+}
+
+// Service and Cost Models
+model CostType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  
+  // Relations
+  invoiceConcepts   InvoiceConcept[]
+}
+
+model ServiceType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+model FreightCondition {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+model PurchaseClause {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+model InvoiceConcept {
+  id      Int    @id @default(autoincrement())
+  name    String
+  ASLType String // JSON string of array
+  
+  // Relations
+  costTypeId Int
+  costType   CostType @relation(fields: [costTypeId], references: [id])
+}
+
+// Container and Status Models
+model ContainerStatus {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+model HouseType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+model Incoterm {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+// Transport Models
+model Vessel {
+  id      Int    @id @default(autoincrement())
+  name    String
+  code    String?
+  onuCode String?
+}
+
+model Port {
+  id          String @id
+  name        String
+  country     String
+  address     String
+  type        String
+  onuCode     String?
+  countryCode String?
+  portCode    String?
+  location    String?
+  
+  // Relations
+  originSeaQuotes      SeaQuote[] @relation("OriginPort")
+  destinationSeaQuotes SeaQuote[] @relation("DestinationPort")
+}
+
+model LandTransportType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+// Contact Models
+model ContactType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  
+  // Relations
+  contactPersons ContactPerson[]
+}
+
+model ContactPerson {
+  id                    Int    @id @default(autoincrement())
+  contactTypeId         Int
+  country               String
+  fullName              String
+  rut                   String   @db.VarChar(32)
+  lineOfBussines        String
+  address               String
+  email                 String
+  phoneNumber           String
+  contactName           String
+  assignedEmployeeName  String
+  seaVoucher            String?
+  skyVouche             String?
+  landVoucher           String?
+  invoiceObservations   String?
+  invoiceInfo           String?
+  
+  // Relations
+  contactType           ContactType @relation(fields: [contactTypeId], references: [id])
+  seaQuotes             SeaQuote[]
+}
+
+// Currency and Package Models
+model Currency {
+  id                           Int     @id @default(autoincrement())
+  name                         String
+  alias                        String
+  parity                       Decimal @db.Decimal(10, 2)
+  usdConversion                Decimal @db.Decimal(10, 2)
+  exchangeRateTaxableInvoice   Decimal @db.Decimal(10, 2)
+  tcExemptInvoice              Decimal @db.Decimal(10, 2)
+}
+
+model PackageType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+// Sea Quote Model
+model SeaQuote {
+  id                Int      @id @default(autoincrement())
+  vendorId          Int
+  freelanceDataId   Int
+  clientId          Int
+  cargoDataId       Int
+  originPortId      String
+  destinationPortId String
+  creationDate      DateTime @default(now())
+  status            String
+  approvalDate      DateTime?
+  
+  // Relations
+  vendor            User         @relation(fields: [vendorId], references: [id])
+  freelanceData     ContactPerson @relation(fields: [freelanceDataId], references: [id])
+  client            ChileanCompany @relation(fields: [clientId], references: [id])
+  cargoData         CargoData    @relation(fields: [cargoDataId], references: [id])
+  originPort        Port         @relation("OriginPort", fields: [originPortId], references: [id])
+  destinationPort   Port         @relation("DestinationPort", fields: [destinationPortId], references: [id])
 } 

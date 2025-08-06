@@ -1,7 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
-
-const prisma = new PrismaClient();
+const prisma = require("../../prisma/prisma");
+const bcrypt = require("bcryptjs");
 
 async function authenticateUser(username, password) {
   const user = await prisma.user.findUnique({ where: { username } });
@@ -12,7 +10,10 @@ async function authenticateUser(username, password) {
 }
 
 async function getUserById(id) {
-  return prisma.user.findUnique({ where: { id }, select: { id: true, username: true, createdAt: true } });
+  return prisma.user.findUnique({
+    where: { id },
+    select: { id: true, username: true, createdAt: true },
+  });
 }
 
 async function createUser(username, password) {
@@ -20,4 +21,4 @@ async function createUser(username, password) {
   return prisma.user.create({ data: { username, password: hashedPassword } });
 }
 
-module.exports = { authenticateUser, getUserById, createUser }; 
+module.exports = { authenticateUser, getUserById, createUser };
