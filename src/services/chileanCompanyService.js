@@ -3,8 +3,26 @@ const prisma = require("../../prisma/prisma");
 // Get all Chilean companies
 async function getAllChileanCompanies() {
   return prisma.chileanCompany.findMany({
+    include: {
+      designatedVendor: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+        },
+      },
+      designatedOperator: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+        },
+      },
+    },
     orderBy: {
-      name: "asc",
+      id: "asc",
     },
   });
 }
@@ -13,6 +31,24 @@ async function getAllChileanCompanies() {
 async function getChileanCompanyById(id) {
   return prisma.chileanCompany.findUnique({
     where: { id: parseInt(id) },
+    include: {
+      designatedVendor: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+        },
+      },
+      designatedOperator: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+        },
+      },
+    },
   });
 }
 
@@ -27,21 +63,56 @@ async function getChileanCompanyByRut(rut) {
 async function createChileanCompany(companyData) {
   return prisma.chileanCompany.create({
     data: {
-      name: companyData.name,
-      rut: companyData.rut,
-      iataCode: companyData.iataCode,
-      siiResolutionNumber: companyData.siiResolutionNumber
-        ? parseInt(companyData.siiResolutionNumber)
+      name: companyData.name || null,
+      rut: companyData.rut || null,
+      CodeIATA: companyData.CodeIATA || null,
+      SiiResNumber: companyData.SiiResNumber
+        ? parseInt(companyData.SiiResNumber)
         : null,
-      siiResolutionDate: companyData.siiResolutionDate
-        ? new Date(companyData.siiResolutionDate)
+      SiiResDate: companyData.SiiResDate
+        ? new Date(companyData.SiiResDate)
         : null,
-      electronicInvoiceEnabled: companyData.electronicInvoiceEnabled || false,
-      socialReason: companyData.socialReason,
-      address: companyData.address,
-      field: companyData.field,
-      email: companyData.email,
-      phoneNumber: companyData.phoneNumber,
+      InvoiceEnabledSii: companyData.InvoiceEnabledSii || false,
+      SocialReason: companyData.SocialReason || null,
+      email: companyData.email || null,
+      phoneNumber: companyData.phoneNumber || null,
+      representativeName: companyData.representativeName || null,
+      representativeRut: companyData.representativeRut || null,
+      bookSendingRut: companyData.bookSendingRut || null,
+      ChecksPP: companyData.ChecksPP || null,
+      Accountantname: companyData.Accountantname || null,
+      AccountantRut: companyData.AccountantRut || null,
+      firstCurrency: companyData.firstCurrency || null,
+      firstMask: companyData.firstMask || null,
+      firstConversion: companyData.firstConversion || null,
+      secondCurrency: companyData.secondCurrency || null,
+      secondConversion: companyData.secondConversion || null,
+      secondMask: companyData.secondMask || null,
+      thirdCurrencyd: companyData.thirdCurrencyd || null,
+      thirdConversion: companyData.thirdConversion || null,
+      thirdMask: companyData.thirdMask || null,
+      vat: companyData.vat ? parseFloat(companyData.vat) : null,
+      retention: companyData.retention ? parseFloat(companyData.retention) : null,
+      designatedVendorId: companyData.designatedVendorId || null,
+      designatedOperatorId: companyData.designatedOperatorId || null,
+    },
+    include: {
+      designatedVendor: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+        },
+      },
+      designatedOperator: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+        },
+      },
     },
   });
 }
@@ -51,21 +122,56 @@ async function updateChileanCompany(id, companyData) {
   return prisma.chileanCompany.update({
     where: { id: parseInt(id) },
     data: {
-      name: companyData.name,
-      rut: companyData.rut,
-      iataCode: companyData.iataCode,
-      siiResolutionNumber: companyData.siiResolutionNumber
-        ? parseInt(companyData.siiResolutionNumber)
+      name: companyData.name || null,
+      rut: companyData.rut || null,
+      CodeIATA: companyData.CodeIATA || null,
+      SiiResNumber: companyData.SiiResNumber
+        ? parseInt(companyData.SiiResNumber)
         : null,
-      siiResolutionDate: companyData.siiResolutionDate
-        ? new Date(companyData.siiResolutionDate)
+      SiiResDate: companyData.SiiResDate
+        ? new Date(companyData.SiiResDate)
         : null,
-      electronicInvoiceEnabled: companyData.electronicInvoiceEnabled,
-      socialReason: companyData.socialReason,
-      address: companyData.address,
-      field: companyData.field,
-      email: companyData.email,
-      phoneNumber: companyData.phoneNumber,
+      InvoiceEnabledSii: companyData.InvoiceEnabledSii || false,
+      SocialReason: companyData.SocialReason || null,
+      email: companyData.email || null,
+      phoneNumber: companyData.phoneNumber || null,
+      representativeName: companyData.representativeName || null,
+      representativeRut: companyData.representativeRut || null,
+      bookSendingRut: companyData.bookSendingRut || null,
+      ChecksPP: companyData.ChecksPP || null,
+      Accountantname: companyData.Accountantname || null,
+      AccountantRut: companyData.AccountantRut || null,
+      firstCurrency: companyData.firstCurrency || null,
+      firstMask: companyData.firstMask || null,
+      firstConversion: companyData.firstConversion || null,
+      secondCurrency: companyData.secondCurrency || null,
+      secondConversion: companyData.secondConversion || null,
+      secondMask: companyData.secondMask || null,
+      thirdCurrencyd: companyData.thirdCurrencyd || null,
+      thirdConversion: companyData.thirdConversion || null,
+      thirdMask: companyData.thirdMask || null,
+      vat: companyData.vat ? parseFloat(companyData.vat) : null,
+      retention: companyData.retention ? parseFloat(companyData.retention) : null,
+      designatedVendorId: companyData.designatedVendorId || null,
+      designatedOperatorId: companyData.designatedOperatorId || null,
+    },
+    include: {
+      designatedVendor: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+        },
+      },
+      designatedOperator: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+        },
+      },
     },
   });
 }
@@ -74,6 +180,39 @@ async function updateChileanCompany(id, companyData) {
 async function deleteChileanCompany(id) {
   return prisma.chileanCompany.delete({
     where: { id: parseInt(id) },
+  });
+}
+
+// Get companies assigned to a user (as vendor or operator)
+async function getUserDesignatedCompanies(userId) {
+  return prisma.chileanCompany.findMany({
+    where: {
+      OR: [
+        { designatedVendorId: parseInt(userId) },
+        { designatedOperatorId: parseInt(userId) },
+      ],
+    },
+    include: {
+      designatedVendor: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+        },
+      },
+      designatedOperator: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+        },
+      },
+    },
+    orderBy: {
+      id: "asc",
+    },
   });
 }
 
@@ -95,8 +234,26 @@ async function searchChileanCompanies(searchTerm) {
         },
       ],
     },
+    include: {
+      designatedVendor: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+        },
+      },
+      designatedOperator: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+        },
+      },
+    },
     orderBy: {
-      name: "asc",
+      id: "asc",
     },
   });
 }
@@ -108,5 +265,6 @@ module.exports = {
   createChileanCompany,
   updateChileanCompany,
   deleteChileanCompany,
+  getUserDesignatedCompanies,
   searchChileanCompanies,
 };

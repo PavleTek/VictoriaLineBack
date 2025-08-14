@@ -348,33 +348,11 @@ const chileanCompanyData = [
   },
 ];
 
-const cargoDataSample = [
-  {
-    containerNumber: "CONT001",
-    sealNumber: "SEAL001",
-    packagesQuantity: 10,
-    weightKg: 1000.50,
-  },
-  {
-    containerNumber: "CONT002",
-    sealNumber: "SEAL002",
-    packagesQuantity: 5,
-    weightKg: 500.25,
-  },
-  {
-    containerNumber: "CONT003",
-    sealNumber: "SEAL003",
-    packagesQuantity: 15,
-    weightKg: 1500.75,
-  },
-];
-
 async function main() {
   console.log("Starting database seeding...");
 
   // Clear existing data
   await prisma.seaQuote.deleteMany();
-  await prisma.cargoData.deleteMany();
   await prisma.contactPerson.deleteMany();
   await prisma.chileanCompany.deleteMany();
   await prisma.userRole.deleteMany();
@@ -646,22 +624,15 @@ async function main() {
     });
   }
 
-  // Seed Cargo Data
-  console.log("Seeding cargo data...");
-  for (const cargoData of cargoDataSample) {
-    await prisma.cargoData.create({
-      data: cargoData,
-    });
-  }
 
   console.log("Database seeding completed successfully!");
 }
 
-// main()
-//   .catch((e) => {
-//     console.error(e);
-//     process.exit(1);
-//   })
-//   .finally(async () => {
-//     await prisma.$disconnect();
-//   });
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

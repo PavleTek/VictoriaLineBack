@@ -329,6 +329,552 @@ class MantenedoresService {
       throw new Error(`Error deleting vessel: ${error.message}`);
     }
   }
+
+  // PurchaseClause methods
+  async getAllPurchaseClauses() {
+    try {
+      const purchaseClauses = await prisma.purchaseClause.findMany();
+      return purchaseClauses;
+    } catch (error) {
+      throw new Error(`Error fetching purchase clauses: ${error.message}`);
+    }
+  }
+
+  async getPurchaseClauseById(id) {
+    try {
+      const purchaseClause = await prisma.purchaseClause.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!purchaseClause) {
+        throw new Error("Purchase clause not found");
+      }
+
+      return purchaseClause;
+    } catch (error) {
+      throw new Error(`Error fetching purchase clause: ${error.message}`);
+    }
+  }
+
+  async createPurchaseClause(purchaseClauseData) {
+    try {
+      const purchaseClause = await prisma.purchaseClause.create({
+        data: {
+          name: purchaseClauseData.name,
+        },
+      });
+
+      return purchaseClause;
+    } catch (error) {
+      throw new Error(`Error creating purchase clause: ${error.message}`);
+    }
+  }
+
+  async updatePurchaseClause(id, purchaseClauseData) {
+    try {
+      const purchaseClause = await prisma.purchaseClause.update({
+        where: { id: parseInt(id) },
+        data: {
+          name: purchaseClauseData.name,
+        },
+      });
+
+      return purchaseClause;
+    } catch (error) {
+      throw new Error(`Error updating purchase clause: ${error.message}`);
+    }
+  }
+
+  async deletePurchaseClause(id) {
+    try {
+      await prisma.purchaseClause.delete({
+        where: { id: parseInt(id) },
+      });
+
+      return { message: "Purchase clause deleted successfully" };
+    } catch (error) {
+      throw new Error(`Error deleting purchase clause: ${error.message}`);
+    }
+  }
+
+  // CargoCondition methods
+  async getAllCargoConditions() {
+    try {
+      const cargoConditions = await prisma.cargoCondition.findMany();
+      return cargoConditions;
+    } catch (error) {
+      throw new Error(`Error fetching cargo conditions: ${error.message}`);
+    }
+  }
+
+  async getCargoConditionById(id) {
+    try {
+      const cargoCondition = await prisma.cargoCondition.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!cargoCondition) {
+        throw new Error("Cargo condition not found");
+      }
+
+      return cargoCondition;
+    } catch (error) {
+      throw new Error(`Error fetching cargo condition: ${error.message}`);
+    }
+  }
+
+  async createCargoCondition(cargoConditionData) {
+    try {
+      const cargoCondition = await prisma.cargoCondition.create({
+        data: {
+          name: cargoConditionData.name,
+        },
+      });
+
+      return cargoCondition;
+    } catch (error) {
+      throw new Error(`Error creating cargo condition: ${error.message}`);
+    }
+  }
+
+  async updateCargoCondition(id, cargoConditionData) {
+    try {
+      const cargoCondition = await prisma.cargoCondition.update({
+        where: { id: parseInt(id) },
+        data: {
+          name: cargoConditionData.name,
+        },
+      });
+
+      return cargoCondition;
+    } catch (error) {
+      throw new Error(`Error updating cargo condition: ${error.message}`);
+    }
+  }
+
+  async deleteCargoCondition(id) {
+    try {
+      await prisma.cargoCondition.delete({
+        where: { id: parseInt(id) },
+      });
+
+      return { message: "Cargo condition deleted successfully" };
+    } catch (error) {
+      throw new Error(`Error deleting cargo condition: ${error.message}`);
+    }
+  }
+
+  // FreightCondition methods
+  async getAllFreightConditions() {
+    try {
+      const freightConditions = await prisma.freightCondition.findMany();
+      return freightConditions;
+    } catch (error) {
+      throw new Error(`Error fetching freight conditions: ${error.message}`);
+    }
+  }
+
+  async getFreightConditionById(id) {
+    try {
+      const freightCondition = await prisma.freightCondition.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!freightCondition) {
+        throw new Error("Freight condition not found");
+      }
+
+      return freightCondition;
+    } catch (error) {
+      throw new Error(`Error fetching freight condition: ${error.message}`);
+    }
+  }
+
+  async createFreightCondition(freightConditionData) {
+    try {
+      const freightCondition = await prisma.freightCondition.create({
+        data: {
+          name: freightConditionData.name,
+        },
+      });
+
+      return freightCondition;
+    } catch (error) {
+      throw new Error(`Error creating freight condition: ${error.message}`);
+    }
+  }
+
+  async updateFreightCondition(id, freightConditionData) {
+    try {
+      const freightCondition = await prisma.freightCondition.update({
+        where: { id: parseInt(id) },
+        data: {
+          name: freightConditionData.name,
+        },
+      });
+
+      return freightCondition;
+    } catch (error) {
+      throw new Error(`Error updating freight condition: ${error.message}`);
+    }
+  }
+
+  async deleteFreightCondition(id) {
+    try {
+      await prisma.freightCondition.delete({
+        where: { id: parseInt(id) },
+      });
+
+      return { message: "Freight condition deleted successfully" };
+    } catch (error) {
+      throw new Error(`Error deleting freight condition: ${error.message}`);
+    }
+  }
+
+  // CargoType methods
+  async getAllCargoTypes() {
+    try {
+      const cargoTypes = await prisma.cargoType.findMany();
+      return cargoTypes;
+    } catch (error) {
+      throw new Error(`Error fetching cargo types: ${error.message}`);
+    }
+  }
+
+  async getCargoTypeById(id) {
+    try {
+      const cargoType = await prisma.cargoType.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!cargoType) {
+        throw new Error("Cargo type not found");
+      }
+
+      return cargoType;
+    } catch (error) {
+      throw new Error(`Error fetching cargo type: ${error.message}`);
+    }
+  }
+
+  async createCargoType(cargoTypeData) {
+    try {
+      const cargoType = await prisma.cargoType.create({
+        data: {
+          name: cargoTypeData.name,
+        },
+      });
+
+      return cargoType;
+    } catch (error) {
+      throw new Error(`Error creating cargo type: ${error.message}`);
+    }
+  }
+
+  async updateCargoType(id, cargoTypeData) {
+    try {
+      const cargoType = await prisma.cargoType.update({
+        where: { id: parseInt(id) },
+        data: {
+          name: cargoTypeData.name,
+        },
+      });
+
+      return cargoType;
+    } catch (error) {
+      throw new Error(`Error updating cargo type: ${error.message}`);
+    }
+  }
+
+  async deleteCargoType(id) {
+    try {
+      await prisma.cargoType.delete({
+        where: { id: parseInt(id) },
+      });
+
+      return { message: "Cargo type deleted successfully" };
+    } catch (error) {
+      throw new Error(`Error deleting cargo type: ${error.message}`);
+    }
+  }
+
+  // Incoterm methods
+  async getAllIncoterms() {
+    try {
+      const incoterms = await prisma.incoterm.findMany();
+      return incoterms;
+    } catch (error) {
+      throw new Error(`Error fetching incoterms: ${error.message}`);
+    }
+  }
+
+  async getIncotermById(id) {
+    try {
+      const incoterm = await prisma.incoterm.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!incoterm) {
+        throw new Error("Incoterm not found");
+      }
+
+      return incoterm;
+    } catch (error) {
+      throw new Error(`Error fetching incoterm: ${error.message}`);
+    }
+  }
+
+  async createIncoterm(incotermData) {
+    try {
+      const incoterm = await prisma.incoterm.create({
+        data: {
+          name: incotermData.name,
+        },
+      });
+
+      return incoterm;
+    } catch (error) {
+      throw new Error(`Error creating incoterm: ${error.message}`);
+    }
+  }
+
+  async updateIncoterm(id, incotermData) {
+    try {
+      const incoterm = await prisma.incoterm.update({
+        where: { id: parseInt(id) },
+        data: {
+          name: incotermData.name,
+        },
+      });
+
+      return incoterm;
+    } catch (error) {
+      throw new Error(`Error updating incoterm: ${error.message}`);
+    }
+  }
+
+  async deleteIncoterm(id) {
+    try {
+      await prisma.incoterm.delete({
+        where: { id: parseInt(id) },
+      });
+
+      return { message: "Incoterm deleted successfully" };
+    } catch (error) {
+      throw new Error(`Error deleting incoterm: ${error.message}`);
+    }
+  }
+
+  // Airport methods
+  async getAllAirports() {
+    try {
+      const airports = await prisma.airport.findMany();
+      return airports;
+    } catch (error) {
+      throw new Error(`Error fetching airports: ${error.message}`);
+    }
+  }
+
+  async getAirportById(id) {
+    try {
+      const airport = await prisma.airport.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!airport) {
+        throw new Error("Airport not found");
+      }
+
+      return airport;
+    } catch (error) {
+      throw new Error(`Error fetching airport: ${error.message}`);
+    }
+  }
+
+  async createAirport(airportData) {
+    try {
+      const airport = await prisma.airport.create({
+        data: {
+          name: airportData.name,
+          address: airportData.address || null,
+          country: airportData.country || null,
+          code: airportData.code || null,
+        },
+      });
+
+      return airport;
+    } catch (error) {
+      throw new Error(`Error creating airport: ${error.message}`);
+    }
+  }
+
+  async updateAirport(id, airportData) {
+    try {
+      const airport = await prisma.airport.update({
+        where: { id: parseInt(id) },
+        data: {
+          name: airportData.name,
+          address: airportData.address || null,
+          country: airportData.country || null,
+          code: airportData.code || null,
+        },
+      });
+
+      return airport;
+    } catch (error) {
+      throw new Error(`Error updating airport: ${error.message}`);
+    }
+  }
+
+  async deleteAirport(id) {
+    try {
+      await prisma.airport.delete({
+        where: { id: parseInt(id) },
+      });
+
+      return { message: "Airport deleted successfully" };
+    } catch (error) {
+      throw new Error(`Error deleting airport: ${error.message}`);
+    }
+  }
+
+  // Warehouse methods
+  async getAllWarehouses() {
+    try {
+      const warehouses = await prisma.warehouse.findMany();
+      return warehouses;
+    } catch (error) {
+      throw new Error(`Error fetching warehouses: ${error.message}`);
+    }
+  }
+
+  async getWarehouseById(id) {
+    try {
+      const warehouse = await prisma.warehouse.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!warehouse) {
+        throw new Error("Warehouse not found");
+      }
+
+      return warehouse;
+    } catch (error) {
+      throw new Error(`Error fetching warehouse: ${error.message}`);
+    }
+  }
+
+  async createWarehouse(warehouseData) {
+    try {
+      const warehouse = await prisma.warehouse.create({
+        data: {
+          name: warehouseData.name,
+          address: warehouseData.address || null,
+          country: warehouseData.country || null,
+        },
+      });
+
+      return warehouse;
+    } catch (error) {
+      throw new Error(`Error creating warehouse: ${error.message}`);
+    }
+  }
+
+  async updateWarehouse(id, warehouseData) {
+    try {
+      const warehouse = await prisma.warehouse.update({
+        where: { id: parseInt(id) },
+        data: {
+          name: warehouseData.name,
+          address: warehouseData.address || null,
+          country: warehouseData.country || null,
+        },
+      });
+
+      return warehouse;
+    } catch (error) {
+      throw new Error(`Error updating warehouse: ${error.message}`);
+    }
+  }
+
+  async deleteWarehouse(id) {
+    try {
+      await prisma.warehouse.delete({
+        where: { id: parseInt(id) },
+      });
+
+      return { message: "Warehouse deleted successfully" };
+    } catch (error) {
+      throw new Error(`Error deleting warehouse: ${error.message}`);
+    }
+  }
+
+  // PackageType methods
+  async getAllPackageTypes() {
+    try {
+      const packageTypes = await prisma.packageType.findMany();
+      return packageTypes;
+    } catch (error) {
+      throw new Error(`Error fetching package types: ${error.message}`);
+    }
+  }
+
+  async getPackageTypeById(id) {
+    try {
+      const packageType = await prisma.packageType.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!packageType) {
+        throw new Error("Package type not found");
+      }
+
+      return packageType;
+    } catch (error) {
+      throw new Error(`Error fetching package type: ${error.message}`);
+    }
+  }
+
+  async createPackageType(packageTypeData) {
+    try {
+      const packageType = await prisma.packageType.create({
+        data: {
+          name: packageTypeData.name,
+        },
+      });
+
+      return packageType;
+    } catch (error) {
+      throw new Error(`Error creating package type: ${error.message}`);
+    }
+  }
+
+  async updatePackageType(id, packageTypeData) {
+    try {
+      const packageType = await prisma.packageType.update({
+        where: { id: parseInt(id) },
+        data: {
+          name: packageTypeData.name,
+        },
+      });
+
+      return packageType;
+    } catch (error) {
+      throw new Error(`Error updating package type: ${error.message}`);
+    }
+  }
+
+  async deletePackageType(id) {
+    try {
+      await prisma.packageType.delete({
+        where: { id: parseInt(id) },
+      });
+
+      return { message: "Package type deleted successfully" };
+    } catch (error) {
+      throw new Error(`Error deleting package type: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new MantenedoresService();

@@ -35,6 +35,22 @@ try {
   console.error("❌ Error loading mantenedoresController:", e);
 }
 
+try {
+  const roleController = require("./controllers/roleController");
+  app.use("/api/roles", roleController);
+  console.log("✅ roleController loaded successfully");
+} catch (e) {
+  console.error("❌ Error loading roleController:", e);
+}
+
+try {
+  const quotationController = require("./controllers/quotationController");
+  app.use("/api", quotationController);
+  console.log("✅ quotationController loaded successfully");
+} catch (e) {
+  console.error("❌ Error loading quotationController:", e);
+}
+
 // Add route debugging
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);

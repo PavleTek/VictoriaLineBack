@@ -3,11 +3,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 // Main Models
 model ChileanCompany {
   id                      Int      @id @default(autoincrement())
-  name                    String
-  rut                     String   @unique @db.VarChar(12)
+  name                    String?
+  rut                     String?  @unique
   CodeIATA                String?
   SiiResNumber            Int?
   SiiResDate              DateTime?
@@ -18,11 +22,11 @@ model ChileanCompany {
   
   // Representative information
   representativeName      String?
-  representativeRut       String?   @db.VarChar(12)
-  bookSendingRut          String?   @db.VarChar(12)
+  representativeRut       String?  
+  bookSendingRut          String?   
   ChecksPP                String?
   Accountantname          String?
-  AccountantRut           String?   @db.VarChar(12)
+  AccountantRut           String?  
   
   // Currency information
   firstCurrency           String?
@@ -39,35 +43,60 @@ model ChileanCompany {
   vat                     Decimal?  @db.Decimal(10, 2)
   retention               Decimal?  @db.Decimal(10, 2)
   
+  // Designated users
+  designatedVendorId      Int?
+  designatedOperatorId    Int?
+  
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
   
   // Relations
+  designatedVendor        User?    @relation("CompanyVendor", fields: [designatedVendorId], references: [id])
+  designatedOperator      User?    @relation("CompanyOperator", fields: [designatedOperatorId], references: [id])
   seaQuotes               SeaQuote[]
+  airQuotes               AirQuote[] @relation("AirQuoteClient")
+  landQuotes              LandQuote[] @relation("LandQuoteClient")
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  firstName    String
-  lastName     String
-  username     String   @unique
-  email        String   @unique
-  rut          String   @unique @db.VarChar(12)
-  address      String
+  id           Int       @id @default(autoincrement())
+  firstName    String?
+  lastName     String?
+  username     String    @unique
+  email        String?   @unique
+  rut          String?   @unique
+  address      String?
   password     String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  profileColor String    @default("#5160D3") // Light Blue default
+  active       Boolean   @default(true)
+  lastAccess   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
   
   // Relations
-  roles        UserRole[]
-  seaQuotes    SeaQuote[]
+  roles                    UserRole[]
+  companiesAsVendor        ChileanCompany[] @relation("CompanyVendor")
+  companiesAsOperator      ChileanCompany[] @relation("CompanyOperator")
+  
+  // Quotation relations
+  seaQuotesAsVendor        SeaQuote[] @relation("SeaQuoteVendor")
+  seaQuotesAsOperator      SeaQuote[] @relation("SeaQuoteOperator")
+  seaQuotesUpdated         SeaQuote[] @relation("SeaQuoteUpdatedBy")
+  
+  airQuotesAsVendor        AirQuote[] @relation("AirQuoteVendor")
+  airQuotesAsOperator      AirQuote[] @relation("AirQuoteOperator")
+  airQuotesUpdated         AirQuote[] @relation("AirQuoteUpdatedBy")
+  
+  landQuotesAsVendor       LandQuote[] @relation("LandQuoteVendor")
+  landQuotesAsOperator     LandQuote[] @relation("LandQuoteOperator")
+  landQuotesUpdated        LandQuote[] @relation("LandQuoteUpdatedBy")
 }
 
 model Role {
   id      Int    @id @default(autoincrement())
   name    String @unique
   
-  // Relations
+  // Relationsnodpe 
   users   UserRole[]
 }
 
@@ -96,23 +125,9 @@ model CargoCondition {
 model ContainerType {
   id   Int    @id @default(autoincrement())
   name String @unique
-  
-  // Relations
-  cargoData CargoData[]
 }
 
-model CargoData {
-  id                Int    @id @default(autoincrement())
-  containerNumber   String?
-  containerTypeId   Int?
-  sealNumber        String?
-  packagesQuantity  Int
-  weightKg          Decimal @db.Decimal(10, 2)
-  
-  // Relations
-  containerType     ContainerType? @relation(fields: [containerTypeId], references: [id])
-  seaQuotes         SeaQuote[]
-}
+
 
 // Service and Cost Models
 model CostType {
@@ -177,20 +192,31 @@ model Port {
   name        String
   country     String
   address     String
-  type        String
+  type        String?
   onuCode     String?
   countryCode String?
   portCode    String?
   location    String?
-  
-  // Relations
-  originSeaQuotes      SeaQuote[] @relation("OriginPort")
-  destinationSeaQuotes SeaQuote[] @relation("DestinationPort")
 }
 
 model LandTransportType {
   id   Int    @id @default(autoincrement())
   name String @unique
+}
+
+model Airport {
+  id      Int     @id @default(autoincrement())
+  name    String 
+  address String?
+  country String?
+  code    String? @unique
+}
+
+model Warehouse {
+  id      Int    @id @default(autoincrement())
+  name    String
+  address String?
+  country String?
 }
 
 // Contact Models
@@ -223,6 +249,8 @@ model ContactPerson {
   // Relations
   contactType           ContactType @relation(fields: [contactTypeId], references: [id])
   seaQuotes             SeaQuote[]
+  airQuotes             AirQuote[] @relation("AirQuoteClient")
+  landQuotes            LandQuote[] @relation("LandQuoteClient")
 }
 
 // Currency and Package Models
@@ -233,7 +261,7 @@ model Currency {
   parity                       Decimal @db.Decimal(10, 2)
   usdConversion                Decimal @db.Decimal(10, 2)
   exchangeRateTaxableInvoice   Decimal @db.Decimal(10, 2)
-  tcExemptInvoice              Decimal @db.Decimal(10, 2)
+  tcExemptInvoice              Decimal @db.Decimal(10, 2)cd 
 }
 
 model PackageType {
@@ -241,24 +269,140 @@ model PackageType {
   name String @unique
 }
 
-// Sea Quote Model
+// Quotation Models
 model SeaQuote {
-  id                Int      @id @default(autoincrement())
-  vendorId          Int
-  freelanceDataId   Int
-  clientId          Int
-  cargoDataId       Int
-  originPortId      String
-  destinationPortId String
-  creationDate      DateTime @default(now())
-  status            String
-  approvalDate      DateTime?
+  id                    Int      @id @default(autoincrement())
+  
+  // User relationships
+  designatedVendorId    Int?
+  designatedOperatorId  Int?
+  lastUpdatedById       Int
+  
+  // Client (can be one of three types)
+  clientType            String   // 'string', 'chileanCompany', 'contactPerson'
+  clientString          String?  // When clientType is 'string'
+  clientChileanCompanyId Int?    // When clientType is 'chileanCompany'
+  clientContactPersonId Int?     // When clientType is 'contactPerson'
+  
+  // Snapshot data from database (not relationships)
+  incotermSnapshot      Json     // Stores incoterm data
+  originPortSnapshot    Json     // Stores origin port data
+  destinationPortSnapshot Json   // Stores destination port data
+  cargoTypeSnapshot     Json     // Stores cargo type data
+  currencySnapshot      Json     // Stores currency data
+  
+  // Direct fields
+  validityDate          DateTime?
+  localConditions       String?
+  localExpenses         Decimal? @db.Decimal(12, 2)
+  demurrageTime         String?  // Time in days as string
+  dthc                  Decimal? @db.Decimal(12, 2)
+  appliedCurrency       String?
+  localOfficeData       String?  @db.Text
+  
+  // Cargo data as JSON array (no relationships)
+  cargoData             Json     // Array of cargo items
+  
+  // Status and timestamps
+  status                String   // 'in_progress', 'approved', 'canceled'
+  creationDate          DateTime @default(now())
+  lastUpdatedAt         DateTime @updatedAt
+  approvalDate          DateTime?
   
   // Relations
-  vendor            User         @relation(fields: [vendorId], references: [id])
-  freelanceData     ContactPerson @relation(fields: [freelanceDataId], references: [id])
-  client            ChileanCompany @relation(fields: [clientId], references: [id])
-  cargoData         CargoData    @relation(fields: [cargoDataId], references: [id])
-  originPort        Port         @relation("OriginPort", fields: [originPortId], references: [id])
-  destinationPort   Port         @relation("DestinationPort", fields: [destinationPortId], references: [id])
+  designatedVendor      User?    @relation("SeaQuoteVendor", fields: [designatedVendorId], references: [id])
+  designatedOperator    User?    @relation("SeaQuoteOperator", fields: [designatedOperatorId], references: [id])
+  lastUpdatedBy         User     @relation("SeaQuoteUpdatedBy", fields: [lastUpdatedById], references: [id])
+  clientChileanCompany  ChileanCompany? @relation(fields: [clientChileanCompanyId], references: [id])
+  clientContactPerson   ContactPerson?  @relation(fields: [clientContactPersonId], references: [id])
+}
+
+model AirQuote {
+  id                    Int      @id @default(autoincrement())
+  
+  // User relationships
+  designatedVendorId    Int?
+  designatedOperatorId  Int?
+  lastUpdatedById       Int
+  
+  // Client (can be one of three types)
+  clientType            String   // 'string', 'chileanCompany', 'contactPerson'
+  clientString          String?
+  clientChileanCompanyId Int?
+  clientContactPersonId Int?
+  
+  // Snapshot data (no containers for air)
+  incotermSnapshot      Json
+  originAirportSnapshot Json
+  destinationAirportSnapshot Json
+  cargoTypeSnapshot     Json
+  currencySnapshot      Json
+  
+  // Air-specific fields
+  validityDate          DateTime?
+  localConditions       String?
+  localExpenses         Decimal? @db.Decimal(12, 2)
+  appliedCurrency       String?
+  localOfficeData       String?  @db.Text
+  
+  // Air cargo data (different structure than sea)
+  cargoData             Json
+  
+  // Status and timestamps
+  status                String
+  creationDate          DateTime @default(now())
+  lastUpdatedAt         DateTime @updatedAt
+  approvalDate          DateTime?
+  
+  // Relations
+  designatedVendor      User?    @relation("AirQuoteVendor", fields: [designatedVendorId], references: [id])
+  designatedOperator    User?    @relation("AirQuoteOperator", fields: [designatedOperatorId], references: [id])
+  lastUpdatedBy         User     @relation("AirQuoteUpdatedBy", fields: [lastUpdatedById], references: [id])
+  clientChileanCompany  ChileanCompany? @relation("AirQuoteClient", fields: [clientChileanCompanyId], references: [id])
+  clientContactPerson   ContactPerson?  @relation("AirQuoteClient", fields: [clientContactPersonId], references: [id])
+}
+
+model LandQuote {
+  id                    Int      @id @default(autoincrement())
+  
+  // User relationships
+  designatedVendorId    Int?
+  designatedOperatorId  Int?
+  lastUpdatedById       Int
+  
+  // Client (can be one of three types)
+  clientType            String   // 'string', 'chileanCompany', 'contactPerson'
+  clientString          String?
+  clientChileanCompanyId Int?
+  clientContactPersonId Int?
+  
+  // Snapshot data
+  incotermSnapshot      Json
+  originLocationSnapshot Json
+  destinationLocationSnapshot Json
+  cargoTypeSnapshot     Json
+  currencySnapshot      Json
+  
+  // Land-specific fields
+  validityDate          DateTime?
+  localConditions       String?
+  localExpenses         Decimal? @db.Decimal(12, 2)
+  appliedCurrency       String?
+  localOfficeData       String?  @db.Text
+  
+  // Land cargo data
+  cargoData             Json
+  
+  // Status and timestamps
+  status                String
+  creationDate          DateTime @default(now())
+  lastUpdatedAt         DateTime @updatedAt
+  approvalDate          DateTime?
+  
+  // Relations
+  designatedVendor      User?    @relation("LandQuoteVendor", fields: [designatedVendorId], references: [id])
+  designatedOperator    User?    @relation("LandQuoteOperator", fields: [designatedOperatorId], references: [id])
+  lastUpdatedBy         User     @relation("LandQuoteUpdatedBy", fields: [lastUpdatedById], references: [id])
+  clientChileanCompany  ChileanCompany? @relation("LandQuoteClient", fields: [clientChileanCompanyId], references: [id])
+  clientContactPerson   ContactPerson?  @relation("LandQuoteClient", fields: [clientContactPersonId], references: [id])
 } 
